@@ -1,5 +1,6 @@
 import {useCallback, useEffect, useState} from "react"
 import {createWorker} from 'tesseract.js';
+import moment from 'moment'
 import './index.css'
 
 function App() {
@@ -18,6 +19,8 @@ function App() {
 			img.src = url.createObjectURL(f);
 
 			createImageBitmap(fileLoaded).then(imageBitmap => {
+				const hours1 = moment().format('HH:mm')
+				const hours2 = moment().format('HH.mm')
 				const scale = Math.max(canvas.width / img.width, canvas.height / img.height);
 				context.drawImage(imageBitmap, 0, 0, img.width * scale, img.height * scale);
 				context.beginPath();
@@ -33,6 +36,25 @@ function App() {
 				context.fillStyle = 'white';
 				context.font = "24px sans-serif";
 				context.fillText('mavrick jean raymond duchamp', 212, 853);
+
+				context.beginPath();
+				context.fillStyle = 'white';
+				context.fillRect(480, 725, 100, 50);
+				context.stroke();
+
+
+				context.fillStyle = '#181818';
+				context.font = "27px sans-serif";
+				context.fillText(hours1, 491, 760);
+
+				context.beginPath();
+				context.fillStyle = 'white';
+				context.fillRect(34, 20, 80, 50);
+				context.stroke();
+
+				context.fillStyle = '#0D0D0D';
+				context.font = "28px sans-serif";
+				context.fillText(hours2, 45, 54);
 
 				context.fillStyle = '#3F3F3F';
 				context.font = "27px sans-serif";
