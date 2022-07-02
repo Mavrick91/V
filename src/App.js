@@ -11,7 +11,8 @@ function App() {
   const [imageBase64, setImageBase64] = useState();
   const [fileLoaded, setFileLoaded] = useState();
   const [dataImage, setDataImage] = useState();
-  const [imageModified, setImageModified] = useState(false);
+  const [imageModifiedLoading, setImageModifiedLoading] = useState(true);
+  const [finalImage, setFinalImage] = useState();
 
   useEffect(() => {
     function dragOverFn(event) {
@@ -22,7 +23,7 @@ function App() {
 
     const dropZoon = document.querySelector('#dropZoon');
 
-    dropZoon.addEventListener('dragover', dragOverFn);
+    if (dropZoon) dropZoon.addEventListener('dragover', dragOverFn);
     return () => {
       dropZoon.removeEventListener('dragover', dragOverFn);
     };
@@ -64,6 +65,19 @@ function App() {
     }
   }, []);
 
+  // const progressMove = useCallback(() => {
+  //   const uploadedFileCounter = document.querySelector('.uploaded-file__counter');
+  //   setTimeout(() => {
+  //     let counterIncrease = setInterval(() => {
+  //       if (progressImageModifed * 100 === 100) {
+  //         clearInterval(counterIncrease);
+  //       } else {
+  //         uploadedFileCounter.innerHTML = `${progressImageModifed * 100}%`;
+  //       }
+  //     }, 100);
+  //   }, 600);
+  // }, [progressImageModifed]);
+
   const uploadFile = useCallback(
     (file) => {
       const fileReader = new FileReader();
@@ -104,26 +118,9 @@ function App() {
 
           setImageBase64(fileReader.result);
           setFileLoaded(file);
-          progressMove();
+          // progressMove();
         });
 
-        // fileReader.onloadend = function () {
-        // 	uploadArea.classList.add('upload-area--open');
-        //
-        // 	loadingText.style.display = "none";
-        // 	previewImage.style.display = 'block';
-        //
-        // 	fileDetails.classList.add('file-details--open');
-        // 	uploadedFile.classList.add('uploaded-file--open');
-        // 	uploadedFileInfo.classList.add('uploaded-file__info--active');
-        //
-        // 	previewImage.setAttribute('src', fileReader.result);
-        //
-        // 	uploadedFileName.innerHTML = file.name;
-        //
-        // 	setImageBase64(fileReader.result);
-        // 	setFileLoaded(file)
-        // }
         fileReader.readAsDataURL(file);
       }
     },
@@ -176,21 +173,6 @@ function App() {
     };
   }, [uploadFile]);
 
-  function progressMove() {
-    let counter = 0;
-    const uploadedFileCounter = document.querySelector('.uploaded-file__counter');
-    setTimeout(() => {
-      let counterIncrease = setInterval(() => {
-        if (counter === 100) {
-          clearInterval(counterIncrease);
-        } else {
-          counter = counter + 10;
-          uploadedFileCounter.innerHTML = `${counter}%`;
-        }
-      }, 100);
-    }, 600);
-  }
-
   useEffect(() => {
     if (fileLoaded && dataImage) {
       const numberOccupied = dataImage.lines[4].words[2].text;
@@ -242,14 +224,16 @@ function App() {
         context.font = '27px sans-serif';
         context.fillText(`${Number.parseInt(numberOccupied) + 1}`, 418, 697);
 
-        setImageModified(true);
+        setImageModifiedLoading(false);
       });
     }
   }, [fileLoaded, dataImage]);
 
   const worker = useMemo(() => {
     return createWorker({
-      logger: (m) => console.log(m),
+      logger(m) {
+        return console.log(m);
+      },
     });
   }, []);
 
@@ -271,53 +255,60 @@ function App() {
     }
   }, [doOCR, imageBase64]);
 
-  const handleDownload = useCallback(() => {
-    const canvas = document.getElementById('viewport');
-    const img = canvas.toDataURL('image/png');
-    document.write('<img src="' + img + '"/>');
-  }, []);
+  useEffect(() => {
+    if (!imageModifiedLoading) {
+      const canvas = document.getElementById('viewport');
+      const img = canvas.toDataURL('image/png');
+      setFinalImage(img);
+    }
+  }, [imageModifiedLoading]);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <div id="uploadArea" className="upload-area">
-        <div className="upload-area__header">
-          <h1 className="upload-area__title">Upload your file</h1>
-          <p className="upload-area__paragraph">File should be an image</p>
-        </div>
+    <div>
+      {imageModifiedLoading ? (
+        <div id="uploadArea" className="upload-area">
+          <div className="upload-area__header">
+            <h1 className="upload-area__title">Upload your file</h1>
+            <p className="upload-area__paragraph">File should be an image</p>
+          </div>
 
-        <div id="dropZoon" className="upload-area__drop-zoon drop-zoon">
-          <span className="drop-zoon__icon">
-            <i className="bx bxs-file-image" />
-          </span>
-          <p className="drop-zoon__paragraph">Drop your file here or Click to browse</p>
-          <span id="loadingText" className="drop-zoon__loading-text">
-            Please Wait
-          </span>
-          <img src="" alt="" id="previewImage" className="drop-zoon__preview-image" draggable="false" />
-          <input type="file" id="fileInput" className="drop-zoon__file-input" accept="image/*" />
-        </div>
-        <div id="fileDetails" className="upload-area__file-details file-details">
-          <h3 className="file-details__title">Uploaded File</h3>
+          <div id="dropZoon" className="upload-area__drop-zoon drop-zoon">
+            <span className="drop-zoon__icon">
+              <i className="bx bxs-file-image" />
+            </span>
+            <p className="drop-zoon__paragraph">Drop your file here or Click to browse</p>
+            <span id="loadingText" className="drop-zoon__loading-text">
+              Please Wait
+            </span>
+            <img src="" alt="" id="previewImage" className="drop-zoon__preview-image" draggable="false" />
+            <input type="file" id="fileInput" className="drop-zoon__file-input" accept="image/*" />
+          </div>
+          <div id="fileDetails" className="upload-area__file-details file-details">
+            <h3 className="file-details__title">Uploaded File</h3>
 
-          <div id="uploadedFile" className="uploaded-file">
-            <div className="uploaded-file__icon-container">
-              <i className="bx bxs-file-blank uploaded-file__icon" />
-              <span className="uploaded-file__icon-text" />
-            </div>
+            <div id="uploadedFile" className="uploaded-file">
+              <div className="uploaded-file__icon-container">
+                <i className="bx bxs-file-blank uploaded-file__icon" />
+                <span className="uploaded-file__icon-text" />
+              </div>
 
-            <div id="uploadedFileInfo" className="uploaded-file__info">
-              <span className="uploaded-file__name">Proejct 1</span>
-              <span className="uploaded-file__counter">0%</span>
+              <div id="uploadedFileInfo" className="uploaded-file__info">
+                <span className="uploaded-file__name">Proejct 1</span>
+                <span className="uploaded-file__counter">
+                  <ClipLoader color={'fff'} loading={imageModifiedLoading} size={15} />
+                </span>
+              </div>
             </div>
           </div>
-          <div className={'button-wrapper'}>
-            <button className="btn btn--accept js-btn" disabled={!imageModified} onClick={handleDownload}>
-              <span style={{ marginRight: '8px' }}>Download</span>
-              <ClipLoader color={'fff'} loading={!imageModified} size={15} />
-            </button>
-          </div>
         </div>
-      </div>
+      ) : (
+        <div id="uploadArea" className="upload-area" style={{ display: 'flex', flexDirection: 'column' }}>
+          <img src={finalImage} alt={''} />
+          <button className={'button-retry'} onClick={() => window.location.reload()}>
+            retry
+          </button>
+        </div>
+      )}
 
       <canvas id="viewport" height={'1600'} width={'739'} />
     </div>

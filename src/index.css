@@ -4,41 +4,14 @@ canvas#viewport {
     top: -100000px
 }
 
-.button-wrapper {
-    margin-top: 20px;
-    text-align: center;
-}
-.btn {
-    display: flex;
-    align-items: center;
+.button-retry {
+    padding: 10px;
+    color: white;
     border: none;
-    border-radius: 3em;
-    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
-    color: #fff;
-    cursor: pointer;
-    margin: 0 auto;
-    padding: 1em 3em;
-    transition: all ease-in-out 250ms;
-}
-
-button[disabled]{
-    background-color: #cccccc;
-    color: #666666;
-}
-
-button[disabled]:hover{
-    background-color: #cccccc;
-    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
-}
-
-.btn:hover, .btn:focus {
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
-}
-.btn--accept {
-    background: #28A264;
-}
-.btn--accept:hover, .btn--accept:focus {
-    background: #40BB75;
+    background: #c6d6ff;
+    border-radius: 40px;
+    margin-top: 50px;
+    font-size: 20px;
 }
 
 /* General Styles */
@@ -73,7 +46,7 @@ body {
 
 /* Upload Area */
 .upload-area {
-    width: 25rem;
+    width: 21rem;
     background-color: var(--clr-white);
     box-shadow: 0 10px 60px rgb(218, 229, 255);
     border: 2px solid var(--clr-light-blue);
