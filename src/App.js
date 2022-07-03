@@ -65,19 +65,6 @@ function App() {
     }
   }, []);
 
-  // const progressMove = useCallback(() => {
-  //   const uploadedFileCounter = document.querySelector('.uploaded-file__counter');
-  //   setTimeout(() => {
-  //     let counterIncrease = setInterval(() => {
-  //       if (progressImageModifed * 100 === 100) {
-  //         clearInterval(counterIncrease);
-  //       } else {
-  //         uploadedFileCounter.innerHTML = `${progressImageModifed * 100}%`;
-  //       }
-  //     }, 100);
-  //   }, 600);
-  // }, [progressImageModifed]);
-
   const uploadFile = useCallback(
     (file) => {
       const fileReader = new FileReader();
@@ -175,7 +162,6 @@ function App() {
 
   useEffect(() => {
     if (fileLoaded && dataImage) {
-      const numberOccupied = dataImage.lines[4].words[2].text;
       const canvas = document.getElementById('viewport');
       const context = canvas.getContext('2d');
       const img = new Image();
@@ -191,11 +177,6 @@ function App() {
         context.beginPath();
         context.fillStyle = '#08944F';
         context.fillRect(170, 820, 350, 50);
-        context.stroke();
-
-        context.beginPath();
-        context.fillStyle = 'white';
-        context.fillRect(414, 667, 50, 40);
         context.stroke();
 
         context.fillStyle = 'white';
@@ -219,10 +200,6 @@ function App() {
         context.fillStyle = '#0D0D0D';
         context.font = '28px sans-serif';
         context.fillText(hours2, 45, 54);
-
-        context.fillStyle = '#3F3F3F';
-        context.font = '27px sans-serif';
-        context.fillText(`${Number.parseInt(numberOccupied) + 1}`, 418, 697);
 
         setImageModifiedLoading(false);
       });
@@ -304,7 +281,16 @@ function App() {
       ) : (
         <div id="uploadArea" className="upload-area" style={{ display: 'flex', flexDirection: 'column' }}>
           <img src={finalImage} alt={''} />
-          <button className={'button-retry'} onClick={() => window.location.reload()}>
+          <button
+            className={'button-retry'}
+            onClick={() => {
+              setImageBase64(null);
+              setFileLoaded(null);
+              setDataImage(null);
+              setImageModifiedLoading(true);
+              setFinalImage(null);
+            }}
+          >
             retry
           </button>
         </div>
